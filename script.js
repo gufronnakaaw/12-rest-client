@@ -17,6 +17,7 @@ window.onload = () => {
     renderStudents()
 }
 
+let url = 'http://localhost:3000/api/v1'
 
 // delete
 document.addEventListener('click', function(e){
@@ -29,15 +30,15 @@ document.addEventListener('click', function(e){
 
         const id = e.target.dataset.id
 
-        fetch(`http://localhost:3000/api/v1/delete/${id}`, { 
+        fetch(url + `/delete/${id}`, { 
             method: 'DELETE'
         })
         .then(response => response.json())
         .then(result => {
-            if( parseInt(result.status) === 200 ){
-                showMessage(result.message, 'success')
-                renderStudents()
-            }
+            
+            showMessage(result.message, 'success')
+            renderStudents()
+
         })
     }
 })
@@ -55,7 +56,7 @@ FormUpdate.addEventListener('submit', async function(e) {
         hobby: UpdateInputHobby.value,
     }
 
-    fetch(`http://localhost:3000/api/v1/update/${id}`, {
+    fetch(url + `/update/${id}`, {
         method: 'PUT',
         headers: {
             'Content-Type' : 'application/json'
@@ -65,12 +66,10 @@ FormUpdate.addEventListener('submit', async function(e) {
     .then(response => response.json())
     .then(result => {
 
-        if( parseInt(result.status) === 200 ){
-            
-            showMessage(result.message, 'success')
-            $('#modal-update').modal('hide')
-            renderStudents()
-        }
+        showMessage(result.message, 'success')
+        $('#modal-update').modal('hide')
+        renderStudents()
+    
     })
 })
 
@@ -79,13 +78,13 @@ document.addEventListener('click', async function(e){
     if( e.target.classList.contains('btn-update') ){
         const id = e.target.dataset.id
 
-        const { data: student } = await getStudents(`http://localhost:3000/api/v1/students/${id}`)
+        const { data: student } = await getStudents(url + `/student/${id}`)
 
         $('#modal-update').modal('show')
-        UpdateInputName.value = student[0].name
-        UpdateInputMajors.value = student[0].majors
-        UpdateInputHobby.value = student[0].hobby
-        InputHidden.value = student[0].id
+        UpdateInputName.value = student.name
+        UpdateInputMajors.value = student.majors
+        UpdateInputHobby.value = student.hobby
+        InputHidden.value = student.id
     }
 })
 
@@ -100,7 +99,7 @@ FormAdd.addEventListener('submit', async function(e) {
         hobby: InputHobby.value,
     }
 
-    fetch('http://localhost:3000/api/v1/create', {
+    fetch(url + '/create', {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json'
@@ -109,13 +108,9 @@ FormAdd.addEventListener('submit', async function(e) {
     })
     .then(response => response.json())
     .then(result => {
-
-        if( parseInt(result.status) === 200 ){
-            
-            showMessage(result.message, 'success')
-            $('#modal-add').modal('hide')
-            renderStudents()
-        }
+        showMessage(result.message, 'success')
+        $('#modal-add').modal('hide')
+        renderStudents()
     })
 })
 
@@ -124,7 +119,7 @@ FormAdd.addEventListener('submit', async function(e) {
 async function renderStudents(){
     let tr = ''
 
-    const { data: students } = await getStudents('http://localhost:3000/api/v1/students')
+    const { data: students } = await getStudents(url + '/students')
 
     students.forEach((student, index) => {
         tr += `
